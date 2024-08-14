@@ -31,14 +31,36 @@ function propertyInput(name, path)
     ImGui.InputText(name, App.getModDescProperty(path), function(value) App.setModDescProperty(path, value) end)
 end
 
+function section(text)
+    ImGui.Text("")
+    ImGui.Text(text)
+    ImGui.Separator()
+end
+
 function mainContent()
     local state = App.state
     ImGui.Text("Current Mod Folder: " .. state.currentModFolder)
     ImGui.SameLine()
     Button({ text = "Write changes", callback = writeChanges })
-    ImGui.Separator()
+
+    section("Basic")
     propertyInput("Author", "modDesc/author")
     propertyInput("Version", "modDesc/version")
+
+    section("Title")
+    local languages = App.getModDescPropertyChildrenNames("modDesc/title")
+    for _, lang in ipairs(languages) do
+        propertyInput(lang, "modDesc/title/" .. lang)
+    end
+
+    section("Description")
+    local languages = App.getModDescPropertyChildrenNames("modDesc/description")
+    for _, lang in ipairs(languages) do
+        propertyInput(lang, "modDesc/description/" .. lang)
+    end
+
+    section("Metadata")
+    propertyInput("Icon Filename", "modDesc/iconFilename")
 end
 
 function mainWindow()

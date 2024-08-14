@@ -58,12 +58,48 @@ void App::onSetup()
             }
             auto node = modDesc.select_node(property.c_str());
             if (!node) {
-                return;
+                // If not exists, create it
+                auto fragments = b::split(property, "/");
+                auto parentFragments = fragments;
+                parentFragments.pop_back();
+                auto parent = b::join(parentFragments, "/");
+
+                auto parentNode = modDesc.select_node(parent.c_str());
+                if (!parentNode) {
+                    return;
+                }
+                parentNode.node().append_child(fragments[fragments.size() - 1].c_str());
+                auto newNode = modDesc.select_node(property.c_str());
+                if (!newNode) {
+                    return;
+                }
+                newNode.node().text().set(value.c_str());
             }
             node.node().text().set(value.c_str());
         });
+    window->makeFunctionAvailable(
+        "getModDescPropertyChildrenNames",
+        [this](const std::string& property) -> std::vector<std::string> {
+            if (property.empty()) {
+                return {};
+            }
+            auto node = modDesc.select_node(property.c_str());
+            if (!node) {
+                return {};
+            }
+            std::vector<std::string> children;
+            for (auto& child : node.node().children()) {
+                if (child.type() != pugi::node_element) {
+                    continue;
+                }
+                children.emplace_back(child.name());
+            }
+            return children;
+        });
     window->makeFunctionAvailable("writeChanges", [this]() {
-        modDesc.save_file((state.currentModFolder + "/modDesc.xml").c_str());
+        modDesc.save_file((state.currentModFolder + "/modDesc.xml").c_str(),
+                          "    ",
+                          pugi::format_default | pugi::format_indent);
     });
 
     auto luaState = window->getLuaState();
