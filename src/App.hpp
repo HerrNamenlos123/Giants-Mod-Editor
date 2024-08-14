@@ -7,7 +7,6 @@
 struct State {
     std::string currentModFolder;
     std::vector<std::string> files;
-    pugi::xml_document modDesc;
 };
 
 class App : public b::Application {
@@ -18,6 +17,7 @@ public:
     }
 
     State state;
+    pugi::xml_document modDesc;
 
     void onSetup() override;
     void onUpdate() override;

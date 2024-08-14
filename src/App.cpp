@@ -25,7 +25,10 @@ void App::onSetup()
             }
         }
     });
-    window->makeFunctionAvailable("clearCache", [this]() { state = State(); });
+    window->makeFunctionAvailable("clearCache", [this]() {
+        state = State();
+        modDesc = pugi::xml_document();
+    });
     window->makeFunctionAvailable(
         "parseModDesc",
         [this](const std::string& modDescFile) { parseModDesc(modDescFile); });
@@ -33,37 +36,39 @@ void App::onSetup()
         "ErrorPopup", [](const std::string& modDesc) { ImGui::OpenPopup("Error"); });
     window->makeFunctionAvailable(
         "getModDescProperty",
-        [this](const std::vector<std::string>& property) -> std::optional<std::string> {
+        [this](const std::string& property) -> std::optional<std::string> {
             if (property.empty()) {
                 return {};
             }
-            auto& doc = state.modDesc;
-            pugi::xml_node node = doc.child(property[0]);
+            auto node = modDesc.select_node(property.c_str());
             if (!node) {
                 return {};
             }
-            for (size_t i = 1; i < property.size(); i++) {
-                node = node.child(property[i].c_str());
-                if (!node) {
-                    return {};
-                }
+            auto textNode = node.node().text();
+            if (!textNode) {
+                return {};
             }
-            const x = 5;
-            return node.value();
+            return textNode.get();
         });
-    // window->makeFunctionAvailable("writeChanges", [this]() {});
-    // window->makeFunctionAvailable("writeChanges", [this]() {});
+    window->makeFunctionAvailable(
+        "setModDescProperty",
+        [this](const std::string& property, const std::string& value) {
+            if (property.empty()) {
+                return;
+            }
+            auto node = modDesc.select_node(property.c_str());
+            if (!node) {
+                return;
+            }
+            node.node().text().set(value.c_str());
+        });
+    window->makeFunctionAvailable("writeChanges", [this]() {
+        modDesc.save_file((state.currentModFolder + "/modDesc.xml").c_str());
+    });
 
     auto luaState = window->getLuaState();
-    // luabridge::getGlobalNamespace(luaState)
-    //     .beginClass<ModDesc>("ModDesc")
-    //     .addProperty("author", &ModDesc::author)
-    //     .addProperty("version", &ModDesc::version)
-    //     .endClass();
-
     luabridge::getGlobalNamespace(luaState)
         .beginClass<State>("State")
-        // .addProperty("modDesc", &State::modDesc)
         .addProperty("currentModFolder", &State::currentModFolder)
         .addProperty("files", &State::files)
         .endClass();
@@ -88,27 +93,16 @@ void App::onClose()
 
 void App::parseModDesc(const std::string& modDescFile)
 {
-    pugi::xml_document doc;
-    pugi::xml_parse_result result
-        = doc.load_file(modDescFile.c_str(), pugi::parse_comments);
+    pugi::xml_parse_result result = modDesc.load_file(
+        modDescFile.c_str(),
+        pugi::parse_default | pugi::parse_comments | pugi::parse_ws_pcdata);
     if (!result) {
         throw std::runtime_error("No modDesc.xml file found");
     }
 
-    if (!doc.child("modDesc")) {
+    if (!modDesc.child("modDesc")) {
         throw std::runtime_error("ModDesc file does not contain a <modDesc> child");
     }
-    auto modDescTag = doc.child("modDesc");
-
-    if (!modDescTag.child("author")) {
-        throw std::runtime_error("<author> field expected in modDesc.xml");
-    }
-    state.modDesc.author = modDescTag.child_value("author");
-
-    if (!modDescTag.child("version")) {
-        throw std::runtime_error("<version> field expected in modDesc.xml");
-    }
-    state.modDesc.version = modDescTag.child_value("version");
 }
 
 std::unique_ptr<b::Application> CreateApp()

@@ -27,15 +27,18 @@ function writeChanges()
     App.writeChanges()
 end
 
+function propertyInput(name, path)
+    ImGui.InputText(name, App.getModDescProperty(path), function(value) App.setModDescProperty(path, value) end)
+end
+
 function mainContent()
     local state = App.state
-    local modDesc = state.modDesc
     ImGui.Text("Current Mod Folder: " .. state.currentModFolder)
     ImGui.SameLine()
     Button({ text = "Write changes", callback = writeChanges })
     ImGui.Separator()
-    ImGui.InputText("Author", modDesc.author, function(str) modDesc.author = str end)
-    ImGui.InputText("Version", modDesc.version, function(str) modDesc.version = str end)
+    propertyInput("Author", "modDesc/author")
+    propertyInput("Version", "modDesc/version")
 end
 
 function mainWindow()

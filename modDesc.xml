@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<modDesc descVersion="44">
+	<author>GIANTS Software, converted by gargouille, edit by Breisgau Modding, SMT</author>
+	<version>1.2.1.0</version>
+	<title>
+		<en>Lindner BF 450</en>
+		<de>Lindner BF 450</de>
+	</title>
+	<description>
+		<en>Lindner BF 450</en>
+		<de>Lindner BF 450</de>
+	</description>
+	<iconFilename>Textur/store.dds</iconFilename>
+	<multiplayer supported="true" />
+	<storeItems>
+		<storeItem xmlFilename="BF450.xml" rootNode="vehicle" />
+		<storeItem xmlFilename="gueldnerG40FrontloaderShovel.xml" />
+		<storeItem xmlFilename="gueldnerG40FrontloaderFork.xml" />
+	</storeItems>
+	<brands>
+		<brand name="LINDNER" title="Lindner" image="Textur/brand_lindner.dds" />
+	</brands>
+</modDesc>
