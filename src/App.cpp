@@ -1,10 +1,8 @@
 #include "App.hpp"
 
-#include "battery/filedialog.hpp"
 #include "battery/fs.hpp"
 #include "imgui.h"
 #include "implot.h"
-#include "pugixml.hpp"
 #include <stdexcept>
 
 void App::onSetup()
@@ -33,17 +31,39 @@ void App::onSetup()
         [this](const std::string& modDescFile) { parseModDesc(modDescFile); });
     window->makeFunctionAvailable(
         "ErrorPopup", [](const std::string& modDesc) { ImGui::OpenPopup("Error"); });
+    window->makeFunctionAvailable(
+        "getModDescProperty",
+        [this](const std::vector<std::string>& property) -> std::optional<std::string> {
+            if (property.empty()) {
+                return {};
+            }
+            auto& doc = state.modDesc;
+            pugi::xml_node node = doc.child(property[0]);
+            if (!node) {
+                return {};
+            }
+            for (size_t i = 1; i < property.size(); i++) {
+                node = node.child(property[i].c_str());
+                if (!node) {
+                    return {};
+                }
+            }
+            const x = 5;
+            return node.value();
+        });
+    // window->makeFunctionAvailable("writeChanges", [this]() {});
+    // window->makeFunctionAvailable("writeChanges", [this]() {});
 
     auto luaState = window->getLuaState();
-    luabridge::getGlobalNamespace(luaState)
-        .beginClass<ModDesc>("ModDesc")
-        .addProperty("author", &ModDesc::author)
-        .addProperty("version", &ModDesc::version)
-        .endClass();
+    // luabridge::getGlobalNamespace(luaState)
+    //     .beginClass<ModDesc>("ModDesc")
+    //     .addProperty("author", &ModDesc::author)
+    //     .addProperty("version", &ModDesc::version)
+    //     .endClass();
 
     luabridge::getGlobalNamespace(luaState)
         .beginClass<State>("State")
-        .addProperty("modDesc", &State::modDesc)
+        // .addProperty("modDesc", &State::modDesc)
         .addProperty("currentModFolder", &State::currentModFolder)
         .addProperty("files", &State::files)
         .endClass();

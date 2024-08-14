@@ -2,17 +2,12 @@
 
 #include "battery/battery.hpp"
 #include "json.hpp"
-#include <atomic>
-
-struct ModDesc {
-    std::string author;
-    std::string version;
-};
+#include "pugixml.hpp"
 
 struct State {
     std::string currentModFolder;
     std::vector<std::string> files;
-    ModDesc modDesc;
+    pugi::xml_document modDesc;
 };
 
 class App : public b::Application {

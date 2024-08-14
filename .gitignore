@@ -34,6 +34,7 @@
 # CMake
 build*/
 cmake-build-*/
+assets
 
 # CLion project files
 .idea
