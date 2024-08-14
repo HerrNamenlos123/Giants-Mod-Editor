@@ -9,6 +9,7 @@
 
 void App::onSetup()
 {
+    window->setTitle("Giants Mod Editor for Farming Simulator");
     window->bindEmbeddedLuaScript<"src/ui/main.lua">();
     window->setIcon(
         b::Resource::FromBytes(b::embed<"assets/Giants.png">().vec(), "png"));
@@ -17,32 +18,39 @@ void App::onSetup()
         s.directory = true;
         return s.sync_open().string();
     });
-    window->makeFunctionAvailable("scanModFolder", [](const std::string& modFolder) {
-        std::vector<std::string> files;
+    window->makeFunctionAvailable("scanModFolder", [this](const std::string& modFolder) {
+        state.files = {};
         for (auto file : std::filesystem::recursive_directory_iterator(
                  b::fs::path(modFolder).std_path())) {
             if (b::fs::is_regular_file(file.path().u8string())) {
-                files.emplace_back(file.path().string());
+                state.files.emplace_back(file.path().string());
             }
         }
-        return files;
     });
+    window->makeFunctionAvailable("clearCache", [this]() { state = State(); });
     window->makeFunctionAvailable(
         "parseModDesc",
         [this](const std::string& modDescFile) { parseModDesc(modDescFile); });
     window->makeFunctionAvailable(
         "ErrorPopup", [](const std::string& modDesc) { ImGui::OpenPopup("Error"); });
 
-    auto state = window->getLuaState();
-    luabridge::getGlobalNamespace(state)
+    auto luaState = window->getLuaState();
+    luabridge::getGlobalNamespace(luaState)
         .beginClass<ModDesc>("ModDesc")
         .addProperty("author", &ModDesc::author)
         .addProperty("version", &ModDesc::version)
         .endClass();
 
-    luabridge::getGlobalNamespace(state)
+    luabridge::getGlobalNamespace(luaState)
+        .beginClass<State>("State")
+        .addProperty("modDesc", &State::modDesc)
+        .addProperty("currentModFolder", &State::currentModFolder)
+        .addProperty("files", &State::files)
+        .endClass();
+
+    luabridge::getGlobalNamespace(luaState)
         .beginNamespace("App")
-        .addProperty("modDesc", &modDesc)
+        .addProperty("state", &state)
         .endNamespace();
 }
 
@@ -75,12 +83,12 @@ void App::parseModDesc(const std::string& modDescFile)
     if (!modDescTag.child("author")) {
         throw std::runtime_error("<author> field expected in modDesc.xml");
     }
-    modDesc.author = modDescTag.child_value("author");
+    state.modDesc.author = modDescTag.child_value("author");
 
     if (!modDescTag.child("version")) {
         throw std::runtime_error("<version> field expected in modDesc.xml");
     }
-    modDesc.version = modDescTag.child_value("version");
+    state.modDesc.version = modDescTag.child_value("version");
 }
 
 std::unique_ptr<b::Application> CreateApp()

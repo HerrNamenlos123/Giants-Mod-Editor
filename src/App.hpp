@@ -9,6 +9,12 @@ struct ModDesc {
     std::string version;
 };
 
+struct State {
+    std::string currentModFolder;
+    std::vector<std::string> files;
+    ModDesc modDesc;
+};
+
 class App : public b::Application {
 public:
     App() = default;
@@ -16,7 +22,7 @@ public:
     {
     }
 
-    ModDesc modDesc;
+    State state;
 
     void onSetup() override;
     void onUpdate() override;

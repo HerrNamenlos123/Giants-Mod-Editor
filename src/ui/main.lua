@@ -1,44 +1,40 @@
-currentModFolder = nil
-files = nil
 errorMessage = nil
 
-function clearCache()
-    if currentModFolder == nil then
-        return
-    end
-    currentModFolder = nil
-end
-
 function scanModFolder()
-    files = App.scanModFolder(currentModFolder)
+    App.scanModFolder(App.state.currentModFolder)
     -- for _, file in ipairs(files) do
     --     print(file)
     -- end
 end
 
 function parseModDesc()
-    App.parseModDesc(currentModFolder .. "/modDesc.xml")
+    App.parseModDesc(App.state.currentModFolder .. "/modDesc.xml")
 end
 
 function openModFolder()
-    clearCache()
-    currentModFolder = App.chooseFolder()
+    App.clearCache()
+    App.state.currentModFolder = App.chooseFolder()
     scanModFolder()
     local status, err = pcall(parseModDesc)
     if not status then
         errorMessage = err
         ImGui.OpenPopup("Error")
+        App.clearCache()
     end
 end
 
 function mainContent()
-    ImGui.Text("Current Mod Folder: " .. currentModFolder)
-    ImGui.Text("Author: " .. App.modDesc.author)
+    local state = App.state
+    local modDesc = state.modDesc
+    ImGui.Text("Current Mod Folder: " .. state.currentModFolder)
+    ImGui.Separator()
+    ImGui.InputText("Author", modDesc.author, function(str) modDesc.author = str end)
+    ImGui.InputText("Version", modDesc.version, function(str) modDesc.version = str end)
 end
 
 function mainWindow()
     Button({ text = "Open Mod Folder", callback = openModFolder })
-    if currentModFolder ~= nil then
+    if App.state.currentModFolder ~= "" then
         mainContent()
     end
     if ImGui.BeginPopupModal("Error", 0) then
