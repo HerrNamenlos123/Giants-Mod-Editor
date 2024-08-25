@@ -7,6 +7,7 @@
 
 void App::onSetup()
 {
+    b::Folders::SetApplicationName("GiantsModEditor");
     window->setTitle("Giants Mod Editor for Farming Simulator");
     window->bindEmbeddedLuaScript<"src/ui/main.lua">();
     window->setIcon(
@@ -78,6 +79,17 @@ void App::onSetup()
             node.node().text().set(value.c_str());
         });
     window->makeFunctionAvailable(
+        "removeModDescProperty", [this](const std::string& property) {
+            if (property.empty()) {
+                return;
+            }
+            auto node = modDesc.select_node(property.c_str());
+            if (!node) {
+                throw std::runtime_error("Property not found for removing: " + property);
+            }
+            node.node().parent().remove_child(node.node());
+        });
+    window->makeFunctionAvailable(
         "getModDescPropertyChildrenNames",
         [this](const std::string& property) -> std::vector<std::string> {
             if (property.empty()) {
@@ -113,6 +125,13 @@ void App::onSetup()
         .beginNamespace("App")
         .addProperty("state", &state)
         .endNamespace();
+
+    try {
+        state.currentModFolder = cache["currentModFolder"];
+    }
+    catch (...) {
+        throw std::runtime_error("Loading the cache failed");
+    }
 }
 
 void App::onUpdate()

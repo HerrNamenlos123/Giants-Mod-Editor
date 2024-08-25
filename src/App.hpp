@@ -1,7 +1,6 @@
 #pragma once
 
 #include "battery/battery.hpp"
-#include "json.hpp"
 #include "pugixml.hpp"
 
 struct State {
@@ -18,6 +17,7 @@ public:
 
     State state;
     pugi::xml_document modDesc;
+    b::cachefile cache;
 
     void onSetup() override;
     void onUpdate() override;
