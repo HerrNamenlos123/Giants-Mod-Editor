@@ -35,7 +35,6 @@
 build*/
 cmake-build-*/
 assets
-!build/_deps/battery-src
 
 # CLion project files
 .idea
