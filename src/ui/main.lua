@@ -1,4 +1,6 @@
 ErrorMessage = nil
+AddNewEntryProperty = ""
+AddNewEntryLanguage = ""
 
 function ScanModFolder()
     App.scanModFolder(App.state.currentModFolder)
@@ -27,14 +29,28 @@ function writeChanges()
     App.writeChanges()
 end
 
-function propertyInput(name, path)
-    ImGui.InputText(name, App.getModDescProperty(path), function(value) App.setModDescProperty(path, value) end)
+function propertyInputText(name, path)
+    ImGui.PushID(path)
+    ImGui.InputText(name, App.getModDescProperty(path), function(value) App.setModDescProperty(path, value) end, 0)
+    ImGui.PopID(name)
+end
+
+function propertyInputTextMultiline(name, path)
+    ImGui.PushID(path)
+    ImGui.InputTextMultiline(name, App.getModDescProperty(path), function(value) App.setModDescProperty(path, value) end, ImVec2(0, 0), 0)
+    ImGui.PopID(name)
 end
 
 function section(text)
     ImGui.Text("")
     ImGui.Text(text)
     ImGui.Separator()
+end
+
+function openAddEntryPopup(path)
+    AddNewEntryProperty = path
+    AddNewEntryLanguage = ""
+    ImGui.OpenPopup("Add Entry")
 end
 
 function mainContent()
@@ -44,23 +60,25 @@ function mainContent()
     Button({ text = "Write changes", callback = writeChanges })
 
     section("Basic")
-    propertyInput("Author", "modDesc/author")
-    propertyInput("Version", "modDesc/version")
+    propertyInputText("Author", "modDesc/author")
+    propertyInputText("Version", "modDesc/version")
 
     section("Title")
     local languages = App.getModDescPropertyChildrenNames("modDesc/title")
     for _, lang in ipairs(languages) do
-        propertyInput(lang, "modDesc/title/" .. lang)
+        propertyInputText(lang, "modDesc/title/" .. lang)
     end
+    Button({ text = "Add Entry", callback = function() openAddEntryPopup("modDesc/title") end })
 
     section("Description")
     local languages = App.getModDescPropertyChildrenNames("modDesc/description")
     for _, lang in ipairs(languages) do
-        propertyInput(lang, "modDesc/description/" .. lang)
+        propertyInputTextMultiline(lang, "modDesc/description/" .. lang)
     end
+    Button({ text = "Add Entry", callback = function() openAddEntryPopup("modDesc/description") end })
 
     section("Metadata")
-    propertyInput("Icon Filename", "modDesc/iconFilename")
+    propertyInputText("Icon Filename", "modDesc/iconFilename")
 end
 
 function mainWindow()
@@ -82,6 +100,16 @@ function mainWindow()
                 b.RequestAnimationFrameIn(0)
             end
         })
+        ImGui.EndPopup()
+    end
+    if ImGui.BeginPopup("Add Entry", 0) then
+        ImGui.InputText("Language", AddNewEntryLanguage, function(value) 
+            AddNewEntryLanguage = value 
+        end, 0)
+        Button({ text = "Add", callback = function() 
+            App.setModDescProperty(AddNewEntryProperty .. AddNewEntryLanguage, "")
+            ImGui.CloseCurrentPopup()
+        end })
         ImGui.EndPopup()
     end
 end
