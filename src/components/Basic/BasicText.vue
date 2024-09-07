@@ -3,5 +3,5 @@ const props = defineProps<{ text: string }>();
 </script>
 
 <template>
-    <div class="mx-1">{{ props.text }}</div>
+  <div class="">{{ props.text }}</div>
 </template>

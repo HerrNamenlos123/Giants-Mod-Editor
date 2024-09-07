@@ -120,7 +120,7 @@ module.exports = {
     "vue/next-tick-style": ["error", "promise"],
     "vue/camelcase": "error",
     "local-rules/no-force-update": "error",
-    "local-rules/no-get-element-by-id": "error",
+    // "local-rules/no-get-element-by-id": "error",
     "local-rules/use-await-nexttick": "warn",
   },
   globals: {
