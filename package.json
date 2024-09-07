@@ -21,6 +21,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.5.0",
+    "@tauri-apps/cli": "^1.6.1",
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@vitejs/plugin-vue": "^4.6.2",
     "@vue/tsconfig": "^0.5.1",
