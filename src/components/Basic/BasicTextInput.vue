@@ -1,13 +1,17 @@
 <script setup lang="ts">
 const value = defineModel<string>({ default: "" });
 const props = defineProps<{
-    placeholder: string;
+  placeholder: string;
 }>();
 </script>
 
 <template>
-    <div class="p-1 bg-red-500">
-        <input type="text" class="" v-model="value" :placeholder="placeholder">
-    </div>
-    <div class="bg-green-500 w-16 h-16 border"/>
+  <div class="m-1">
+    <input
+      v-model="value"
+      class="border rounded-sm pl-1 border-gray-400"
+      type="text"
+      :placeholder="placeholder"
+    />
+  </div>
 </template>

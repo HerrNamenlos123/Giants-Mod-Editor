@@ -1,34 +1,25 @@
 <script setup lang="ts">
 import { PhFactory } from "@phosphor-icons/vue";
-import Greet from "./components/Greet.vue";
-import BasicTextInput from "./components/Basic/BasicTextInput.vue";
 import { ref } from "vue";
+import BasicTextInput from "./components/Basic/BasicTextInput.vue";
+import Greet from "./components/Greet.vue";
+import BasicButton from "./components/Basic/BasicButton.vue";
+import { dialog } from '@tauri-apps/api';
+import BasicText from "./components/Basic/BasicText.vue";
 
-const s = ref("hello");
+const selectedFolder = ref<string | null>(null);
+
+const chooseFolder = async () => {
+  selectedFolder.value = await dialog.open({
+    directory: true, // Set to true to open folder chooser
+    multiple: false, // Choose whether to allow selecting multiple folders
+  }) as string | null;
+};
 </script>
 
 <template>
-  <div class="container">
-    <h1>Welcome to Tauri!</h1>
-
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-    <PhFactory />
-
-    <BasicTextInput placeholder="Enter a name..." v-model="s"/>
-    <BasicTextInput placeholder="Enter a name..." v-model="s"/>
-
-    <Greet />
+  <div class="flex flex-col p-1">
+    <BasicButton text="Choose Mod Folder" />
+    <BasicText text="Chosen Folder: " />
   </div>
 </template>
