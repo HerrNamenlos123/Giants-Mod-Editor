@@ -11,10 +11,10 @@ const props = defineProps<{
 
 const proxy = computed({
   get() {
-    return store.docs?.modDesc.getProperty(props.property) || "";
+    return store.getProperty(props.property);
   },
   set(value: string) {
-    store.docs?.modDesc.setProperty(props.property, value);
+    return store.setProperty(props.property, value);
   },
 });
 </script>

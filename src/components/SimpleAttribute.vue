@@ -18,25 +18,17 @@ const props = defineProps<{
 
 const proxy = computed({
   get() {
-    const attribute = store.docs?.modDesc.getPropertyAttribute(
-      props.property,
-      props.attribute,
-    );
-    return attribute || "";
+    return store.getPropertyAttribute(props.property, props.attribute);
   },
   set(value: string) {
-    store.docs?.modDesc.setPropertyAttribute(
-      props.property,
-      props.attribute,
-      value,
-    );
+    store.setPropertyAttribute(props.property, props.attribute, value);
   },
 });
 
 const s = ref(false);
 const booleanProxy = computed({
   get() {
-    const attribute = store.docs?.modDesc.getPropertyAttribute(
+    const attribute = store.getPropertyAttribute(
       props.property,
       props.attribute,
     );
@@ -45,10 +37,10 @@ const booleanProxy = computed({
   },
   set(value: boolean) {
     s.value = value;
-    store.docs?.modDesc.setPropertyAttribute(
+    store.setPropertyAttribute(
       props.property,
       props.attribute,
-      s.value.valueOf().toString(),
+      s.value.toString(),
     );
   },
 });

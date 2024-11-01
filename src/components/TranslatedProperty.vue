@@ -5,6 +5,7 @@ import BasicTextInput from "./Basic/BasicTextInput.vue";
 import { useStore } from "@/store";
 import TextInputXMLTag from "./TextInputXMLTag.vue";
 import BasicButton from "./Basic/BasicButton.vue";
+import SectionHeader from "./SectionHeader.vue";
 
 const store = useStore();
 
@@ -21,7 +22,8 @@ watch(
   [() => doc.value],
   () => {
     if (doc.value) {
-      languages.value = doc.value.getPropertyChildren(props.property) ?? [];
+      languages.value =
+        doc.value.getPropertyChildren(props.property.split("@")[1]) ?? [];
     }
   },
   { immediate: true, deep: true },
@@ -59,7 +61,7 @@ onUnmounted(() => {
 
 <template>
   <div class="m-1 flex flex-col mb-4">
-    <BasicText class="font-bold" :text="props.title" />
+    <SectionHeader :title="props.title" />
     <div v-for="l in languages" :key="l" class="flex flex-col">
       <div class="flex pl-2 items-center h-fit">
         <BasicButton

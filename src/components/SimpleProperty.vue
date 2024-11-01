@@ -10,8 +10,9 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="m-1 flex flex-col mb-4">
-    <BasicText class="font-bold" :text="props.title" />
+  <div class="m-1 flex pl-2 items-center">
+    <!-- <BasicText class="font-bold" :text="props.title" /> -->
+    <BasicText class="mr-2 w-48" :text="props.title + ':'" />
     <div class="flex pl-2 items-center h-fit">
       <TextInputXMLTag :multiline="multiline" :property="props.property" />
     </div>
