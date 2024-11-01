@@ -18,11 +18,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col h-full">
     <BasicText :text="'Chosen Folder: ' + store.modFolder" />
-    <div class="flex">
+    <div class="flex h-full">
       <div class="flex-grow">
-        <BasicTabSwitcher class="mt-2" :options="tabs">
+        <BasicTabSwitcher class="h-full" :options="tabs">
           <template #General>
             <SimpleProperty property="modDesc/author" title="Author" />
             <SimpleProperty property="modDesc/version" title="Version" />
@@ -62,7 +62,7 @@ onMounted(async () => {
           </template>
         </BasicTabSwitcher>
       </div>
-      <div class="flex justify-end h-fit">
+      <div class="flex flex-col justify-end h-fit">
         <BasicButton text="Load from Disk" @clicked="store.loadDocs()" />
         <BasicButton text="Write to Disk" @clicked="store.saveDocs()" />
       </div>

@@ -6,7 +6,7 @@ const store = useStore();
 </script>
 
 <template>
-  <div class="flex flex-col p-1 bg-background h-screen w-screen text-text">
+  <div class="flex flex-col bg-background h-screen w-screen text-text">
     <BasicButton text="Choose Mod Folder" @clicked="store.chooseModFolder()" />
     <ModEditor v-if="store.modFolder !== null" />
   </div>

@@ -36,7 +36,7 @@ const select = (option: string) => {
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col overflow-hidden">
+  <div class="w-full flex flex-col overflow-hidden">
     <div class="w-full flex select-none border-b border-gray-300">
       <div
         v-for="(tabItem, index) in options"
@@ -54,8 +54,11 @@ const select = (option: string) => {
         </div>
       </div>
     </div>
-    <div class="w-full flex-grow flex flex-col pt-1">
-      <slot :name="selectedItem" />
+    <div class="relative w-full h-full flex flex-col pt-1 overflow-auto">
+      <div class="absolute w-full h-full p-1 flex flex-col">
+        <slot :name="selectedItem" />
+        <div class="p-1" />
+      </div>
     </div>
   </div>
 </template>
